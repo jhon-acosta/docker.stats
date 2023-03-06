@@ -1,10 +1,9 @@
 export interface Stat {
-  id?: string // autoincremental
-  name: string
+  id?: string // PK
+  container_id: number | string // FK
   cpu_percentaje: string
   mem_usage_limit: string
   mem_percentaje: string
   netio: string
   blockio: string
-  container_id: number | string
 }

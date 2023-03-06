@@ -1,4 +1,4 @@
 export interface Container {
-  id?: string
+  id?: string // PK
   name: string
 }

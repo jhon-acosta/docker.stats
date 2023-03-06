@@ -12,10 +12,12 @@
     "@fastify/cors": "^8.2.0",
     "@fastify/formbody": "^7.4.0",
     "dayjs": "^1.11.7",
+    "debug": "^4.3.4",
     "fastify": "^4.14.0",
     "sqlite3": "^5.1.4"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.7",
     "@types/node": "^18.14.6",
     "esbuild": "^0.17.11",
     "esbuild-node-tsc": "^2.0.5",

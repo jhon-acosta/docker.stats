@@ -15,7 +15,7 @@ export default class DB {
   readonly tableContainers =
     'CREATE TABLE IF NOT EXISTS CONTAINERS (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL)'
   readonly tableStats =
-    'CREATE TABLE IF NOT EXISTS STATS (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, cpu_percentaje TEXT NOT NULL, mem_usage_limit TEXT NOT NULL, mem_percentaje TEXT NOT NULL ,netio TEXT NOT NULL, blockio TEXT NOT NULL, container_id INTEGER, FOREIGN KEY (container_id) REFERENCES CONTAINERS(id))'
+    'CREATE TABLE IF NOT EXISTS STATS (id INTEGER PRIMARY KEY AUTOINCREMENT, cpu_percentaje TEXT NOT NULL, mem_usage_limit TEXT NOT NULL, mem_percentaje TEXT NOT NULL ,netio TEXT NOT NULL, blockio TEXT NOT NULL, container_id INTEGER, FOREIGN KEY (container_id) REFERENCES CONTAINERS(id))'
 
   constructor() {
     this.initDB()
