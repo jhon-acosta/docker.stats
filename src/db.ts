@@ -47,9 +47,11 @@ export default class DB {
   }
 
   /**
-   * @param table CONTAINERS, STATS
+   * @param table - CONTAINERS, STATS
    */
-  async getAll(table: DataBase) {
+  async getAll<T extends { [s: string]: any }>(
+    table: DataBase,
+  ): Promise<{ data: T[] }> {
     await this.initDB()
     return await new Promise((resolve, reject) => {
       this.db.all(`SELECT * FROM ${table}`, function (error, rows) {
@@ -62,7 +64,7 @@ export default class DB {
   }
 
   /**
-   * @param table CONTAINERS, STATS
+   * @param table - CONTAINERS, STATS
    * @param id del registro a obtener
    */
   async getOne<T extends { [s: string]: any }>(
@@ -84,6 +86,11 @@ export default class DB {
     })
   }
 
+  /**
+   * @param table - CONTAINERS, STATS
+   * @param row - objecto genérico para validar campos requeridos en base a tipo
+   * de dato asignado
+   */
   async insertOne<T extends { [s: string]: any }>(
     table: DataBase,
     row: T,
@@ -106,6 +113,12 @@ export default class DB {
     })
   }
 
+  /**
+   * @param table - CONTAINERS, STATS
+   * @param id - identificador único `pk`
+   * @param row - objecto genérico para validar campos requeridos en base a tipo
+   * de dato asignado
+   */
   async updateOne<T extends { [s: string]: any }>(
     table: DataBase,
     id: string | number,
@@ -128,7 +141,10 @@ export default class DB {
       )
     })
   }
-
+  /**
+   * @param table - CONTAINERS, STATS
+   * @param id - identificador único `pk`
+   */
   async deleteOne(table: DataBase, id: string | number) {
     this.initDB()
     return await new Promise((resolve, reject) => {
@@ -149,6 +165,24 @@ export default class DB {
         }
         resolve({ message: `Tabla ${table} eliminada correctamente` })
       })
+    })
+  }
+
+  async joinTable(
+    table1: DataBase,
+    table2: DataBase,
+    id: string | number,
+  ): Promise<any> {
+    return await new Promise((resolve, reject) => {
+      this.db.all(
+        `SELECT * FROM ${table1} INNER JOIN ${table2} ON ${table1}.id = ${table2}.container_id WHERE ${table1}.id = ${id}`,
+        (error, rows) => {
+          if (error) {
+            return reject(error)
+          }
+          resolve({ id, stats: rows })
+        },
+      )
     })
   }
 }
