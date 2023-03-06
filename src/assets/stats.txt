@@ -1,0 +1,5 @@
+[2J[HCONTAINER - NAME - CPU % - MEM USAGE / LIMIT - MEM % - NET I/O - BLOCK I/O
+f599b452afef - portafolio_api.1.yihe6zscbxmjgj9d9qvb3jym9 - 0.05% - 54.39MiB / 15.41GiB - 0.34% - 13.2MB / 1.47MB - 33.6MB / 0B
+bd46e56c8db6 - portafolio_api.2.ggwjyy6q0ghs3q3l0hbomyxog - 0.01% - 55.56MiB / 15.41GiB - 0.35% - 13.2MB / 1.47MB - 31.4MB / 0B
+9f980f53625e - mongodb_db2.1.cfi3bihggvg7k4ukzwfk5w98g - 1.03% - 194.6MiB / 15.41GiB - 1.23% - 21.3MB / 23.8MB - 73.3MB / 277MB
+0e26be61349d - mongodb_db1.1.n68svlui6o64uwuorosyve45a - 1.03% - 195.5MiB / 15.41GiB - 1.24% - 27.1MB / 23.7MB - 84MB / 240MB   

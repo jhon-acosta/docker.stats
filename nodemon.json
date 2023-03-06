@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ignore": [
+    "node_modules"
+  ],
+  "ext": "ts,mjs,js,json",
+  "exec": "etsc && node ./build/index.js",
+  "legacyWatch": true
+}
