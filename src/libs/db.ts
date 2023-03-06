@@ -1,13 +1,28 @@
+import path from 'path'
 import sqlite3 from 'sqlite3'
 
 type DataBase = 'CONTAINERS' | 'STATS'
+
+export interface Container {
+  id?: string // PK
+  name: string
+}
+
+export interface Stat {
+  id?: string // PK
+  container_id: number | string // FK
+  cpu_percentaje: string
+  mem_usage_limit: string
+  mem_percentaje: string
+  netio: string
+  blockio: string
+}
 
 export default class DB {
   /**
    * Configuración de db
    */
-  readonly dbLocate =
-    '/home/jhon/Desktop/monitoreo/docker.stats.api/src/assets/sqlite.db'
+  readonly dbLocate = path.join(__dirname, '../../src/resources/db.db')
   readonly db = new sqlite3.Database(this.dbLocate)
   /**
    * Configuración de modelo de db

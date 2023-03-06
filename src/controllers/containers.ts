@@ -1,5 +1,4 @@
-import DB from '../db'
-import { Container } from 'src/types/containers'
+import DB, { Container } from '../libs/db'
 import { FastifyReply, FastifyRequest } from 'fastify'
 
 const db = new DB()
@@ -13,7 +12,6 @@ export default {
           db.joinTable('CONTAINERS', 'STATS', item.id!),
         )
         const data = await Promise.all(promesas)
-        console.log('data', data)
         const response = data.map((item) => {
           return {
             container: containers.data.find((item) => item.id === item.id)

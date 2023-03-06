@@ -1,13 +1,11 @@
 import fs from 'fs'
-import DB from '../db'
 import dayjs from 'dayjs'
 import Debug from 'debug'
-import { Stat } from 'src/types/stats'
-import { Container } from '../types/containers'
+import DB, { Container, Stat } from './db'
 
 const debug = Debug('api:src:stats')
 
-const path = 'src/assets/stats.txt'
+const path = 'src/resources/stats.txt'
 
 async function validateContainer(db: DB, container: string) {
   try {
