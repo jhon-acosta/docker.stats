@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  stats:
+    image: docker-stats-api
+    ports:
+      - 3001:3001
+    command: sh -c "docker stats --format 'table {{.Container}} - {{.Name}} - {{.CPUPerc}} - {{.MemUsage}} - {{.MemPerc}} - {{.NetIO}} - {{.BlockIO}}' > /app/src/resources/stats.txt & node /app/build/index.js"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure

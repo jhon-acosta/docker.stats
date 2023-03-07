@@ -2,10 +2,11 @@ import fs from 'fs'
 import dayjs from 'dayjs'
 import Debug from 'debug'
 import DB, { Container, Stat } from './db'
+import path from 'path'
 
 const debug = Debug('api:src:stats')
 
-const path = 'src/resources/stats.txt'
+const ruta = path.join(__dirname, '../../src/resources/stats.txt')
 
 async function validateContainer(db: DB, container: string) {
   try {
@@ -28,14 +29,14 @@ async function validateContainer(db: DB, container: string) {
 
 export default async function statsWatch(db: DB) {
   try {
-    fs.watchFile(path, { interval: 1000 }, async (status) => {
+    fs.watchFile(ruta, { interval: 1000 }, async (status) => {
       try {
         debug(
           'archivo a la escucha/lectura: %s - %s',
           path,
           dayjs(status.atime).format('DD/MM/YYYY HH:mm:ss'),
         )
-        const data = fs.readFileSync(path, 'utf8')
+        const data = fs.readFileSync(ruta, 'utf8')
         const registro = data?.split(' - ')
         const index = registro.lastIndexOf('NET I/O') + 2
         debug('tomando último lote de escritura posición: %s', index)
