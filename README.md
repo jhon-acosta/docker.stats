@@ -1,7 +1,11 @@
-### Docker Stats
+## Docker Stats
 
-- Para escribir los stats de docker en un archivo ejecutar el siguiente comando:
+Permite tener los datos segundo/segundo de las estadísticas de la memoria, cpu, etc de cada contenedor.
 
+
+#### Pasos para levantar el stack
 ```sh
-docker stats --format "table {{.Container}} - {{.Name}} - {{.CPUPerc}} - {{.MemUsage}} - {{.MemPerc}} - {{.NetIO}} - {{.BlockIO}}"
+> docker build -t docker-stats .
+> docker stack deploy -c ./docker.stats.api.yml docker_stats
+
 ```
