@@ -16,8 +16,7 @@ const server: FastifyInstance = fastify({ logger: true })
     server.register(formbody)
     server.register(routes, { prefix: '/api' })
 
-    const dbInstance = new DB()
-    await statsWatch(dbInstance)
+    await statsWatch(new DB())
 
     await server.listen({ host: '0.0.0.0', port: 3001 })
   } catch (err) {

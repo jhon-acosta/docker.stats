@@ -1,8 +1,8 @@
 import fs from 'fs'
+import path from 'path'
 import dayjs from 'dayjs'
 import Debug from 'debug'
 import DB, { Container, Stat } from './db'
-import path from 'path'
 
 const debug = Debug('api:src:stats')
 
@@ -33,7 +33,7 @@ export default async function statsWatch(db: DB) {
       try {
         debug(
           'archivo a la escucha/lectura: %s - %s',
-          path,
+          ruta,
           dayjs(status.atime).format('DD/MM/YYYY HH:mm:ss'),
         )
         const data = fs.readFileSync(ruta, 'utf8')

@@ -22,7 +22,7 @@ export default class DB {
   /**
    * Configuración de db
    */
-  readonly dbLocate = path.join(__dirname, '../../src/resources/db.db')
+  readonly dbLocate = path.join(__dirname, '../../src/resources/db/db.db')
   readonly db = new sqlite3.Database(this.dbLocate)
   /**
    * Configuración de modelo de db

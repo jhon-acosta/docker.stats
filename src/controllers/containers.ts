@@ -12,14 +12,7 @@ export default {
           db.joinTable('CONTAINERS', 'STATS', item.id!),
         )
         const data = await Promise.all(promesas)
-        const response = data.map((item) => {
-          return {
-            container: containers.data.find((item) => item.id === item.id)
-              ?.name,
-            ...item,
-          }
-        })
-        return res.send({ data: response })
+        return res.send({ data })
       }
       res.send([])
     } catch (error) {
