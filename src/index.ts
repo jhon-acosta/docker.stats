@@ -2,13 +2,16 @@ import DB from './libs/db'
 import Debug from 'debug'
 import cors from '@fastify/cors'
 import { routes } from './routes'
+import { configs } from './libs/utils'
 import formbody from '@fastify/formbody'
 import statsWatch from './libs/stats-watch'
 import fastify, { FastifyInstance } from 'fastify'
 
-Debug('api:index')
+if (!!configs.ENV_DEV === true) {
+  Debug('api:index')
+}
 
-const server: FastifyInstance = fastify({ logger: true })
+const server: FastifyInstance = fastify({ logger: configs.logger })
 
 ;(async () => {
   try {
@@ -16,9 +19,9 @@ const server: FastifyInstance = fastify({ logger: true })
     server.register(formbody)
     server.register(routes, { prefix: '/api' })
 
-    await statsWatch(new DB())
+    await statsWatch(new DB(), server)
 
-    await server.listen({ host: '0.0.0.0', port: 3001 })
+    await server.listen({ host: configs.HOST, port: configs.PORT })
   } catch (err) {
     server.log.error(err)
     process.exit(1)

@@ -1,5 +1,10 @@
 import path from 'path'
 import sqlite3 from 'sqlite3'
+import {
+  convertirStringToNumber,
+  convertirStringToObject,
+  validarRegistroNumerico,
+} from './utils'
 
 type DataBase = 'CONTAINERS' | 'STATS'
 
@@ -11,6 +16,7 @@ export interface Container {
 export interface Stat {
   id?: string // PK
   container_id: number | string // FK
+  date: string
   cpu_percentaje: string
   mem_usage_limit: string
   mem_percentaje: string
@@ -30,7 +36,7 @@ export default class DB {
   readonly tableContainers =
     'CREATE TABLE IF NOT EXISTS CONTAINERS (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL)'
   readonly tableStats =
-    'CREATE TABLE IF NOT EXISTS STATS (id INTEGER PRIMARY KEY AUTOINCREMENT, cpu_percentaje TEXT NOT NULL, mem_usage_limit TEXT NOT NULL, mem_percentaje TEXT NOT NULL ,netio TEXT NOT NULL, blockio TEXT NOT NULL, container_id INTEGER, FOREIGN KEY (container_id) REFERENCES CONTAINERS(id))'
+    'CREATE TABLE IF NOT EXISTS STATS (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, cpu_percentaje TEXT NOT NULL, mem_usage_limit TEXT NOT NULL, mem_percentaje TEXT NOT NULL , netio TEXT NOT NULL, blockio TEXT NOT NULL, container_id INTEGER, FOREIGN KEY (container_id) REFERENCES CONTAINERS(id))'
 
   constructor() {
     this.initDB()
@@ -195,6 +201,7 @@ export default class DB {
           if (error) {
             return reject(error)
           }
+          validarRegistroNumerico(rows)
           resolve({ id, stats: rows })
         },
       )

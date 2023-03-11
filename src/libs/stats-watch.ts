@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import dayjs from 'dayjs'
 import Debug from 'debug'
+import { FastifyInstance } from 'fastify'
 import DB, { Container, Stat } from './db'
 
 const debug = Debug('api:src:stats')
@@ -27,14 +28,23 @@ async function validateContainer(db: DB, container: string) {
   }
 }
 
-export default async function statsWatch(db: DB) {
+const getDigits = (value: string, memUsageLimit = false) => {
+  const regex = value.match(/\d+(\.\d+)?/g)
+  return {
+    ['current' + (memUsageLimit ? 'MiB' : 'MB')]: regex?.[0],
+    ['total' + (memUsageLimit ? 'GiB' : 'MB')]: regex?.[1],
+  }
+}
+const percentajeSplit = (value: string) => value?.split?.('%')?.[0]
+const convertToString = (data: Record<string, any>) => JSON.stringify(data)
+
+export default async function statsWatch(db: DB, instance: FastifyInstance) {
   try {
     fs.watchFile(ruta, { interval: 1000 }, async (status) => {
       try {
-        debug(
-          'archivo a la escucha/lectura: %s - %s',
-          ruta,
-          dayjs(status.atime).format('DD/MM/YYYY HH:mm:ss'),
+        const fecha = dayjs(status.atime)
+        instance.log.info(
+          `reading file:${ruta} - ${fecha.format('DD/MM/YYYY HH:mm:ss')}`,
         )
         const data = fs.readFileSync(ruta, 'utf8')
         const registro = data?.split(' - ')
@@ -63,14 +73,15 @@ export default async function statsWatch(db: DB) {
             fruta.includes(contenedorNombreServicio),
           )
           const clone = JSON.parse(JSON.stringify(registro))
-          const stat = clone?.splice(posicion, 6)
+          const stat: string[] = clone?.splice(posicion, 6)
           const nuevoStat = {
             container_id,
-            cpu_percentaje: stat[1],
-            mem_usage_limit: stat[2],
-            mem_percentaje: stat[3],
-            netio: stat[4],
-            blockio: stat[5].split('\n')[0],
+            date: fecha.toISOString(),
+            cpu_percentaje: percentajeSplit(stat[1]),
+            mem_usage_limit: convertToString(getDigits(stat[2], true)),
+            mem_percentaje: percentajeSplit(stat[3]),
+            netio: convertToString(getDigits(stat[4])),
+            blockio: convertToString(getDigits(stat[5].split('\n')[0])),
           }
           debug('extrayendo estadísticas %O', nuevoStat)
           await db.insertOne<Stat>('STATS', nuevoStat)

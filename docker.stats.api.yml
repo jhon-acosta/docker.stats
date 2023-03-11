@@ -4,11 +4,14 @@ services:
   api:
     image: docker-stats
     ports:
-      - 3001:3001
+      - 8082:8082
     command: sh -c "docker stats --format 'table {{.Container}} - {{.Name}} - {{.CPUPerc}} - {{.MemUsage}} - {{.MemPerc}} - {{.NetIO}} - {{.BlockIO}}' > /app/src/resources/stats.txt & node /app/build/index.js"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - docker-stats-db:/app/src/resources/db
+    environment:
+      HOST: '0.0.0.0'
+      NODE_ENV: PRODUCTION
     deploy:
       replicas: 1
       restart_policy:
