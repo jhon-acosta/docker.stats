@@ -31,9 +31,14 @@ async function validateContainer(db: DB, container: string) {
 const getUnit = (value: string, memUseLimit = false) =>
   value.match(memUseLimit ? /[MGT]?iB/g : /[kMG]?B(?=\s|$)/g)
 const getDigits = (value: string) => value.match(/\d+(\.\d+)?/g)
-
 const percentajeSplit = (value: string) => value?.split?.('%')?.[0]
 const convertToString = (data: Record<string, any>) => JSON.stringify(data)
+
+const getValueUnit = (value: string, index: number, memUseLimit = false) =>
+  convertToString({
+    value: getDigits(value)?.[index],
+    unit: getUnit(value, memUseLimit)?.[index],
+  })
 
 export default async function statsWatch(db: DB, instance: FastifyInstance) {
   try {
@@ -45,7 +50,6 @@ export default async function statsWatch(db: DB, instance: FastifyInstance) {
         )
         const data = fs.readFileSync(ruta, 'utf8')
         const registro = data?.split(' - ')
-        console.log('registro', registro)
         const index = registro.lastIndexOf('NET I/O') + 2
         debug('tomando último lote de escritura posición: %s', index)
         registro.splice(0, index)
@@ -77,30 +81,12 @@ export default async function statsWatch(db: DB, instance: FastifyInstance) {
             date: fecha.toISOString(),
             mem_percentaje: parseFloat(percentajeSplit(stat[3])),
             cpu_percentaje: parseFloat(percentajeSplit(stat[1])),
-            mem_usage_limit: convertToString({
-              value: getDigits(stat[2])?.[0],
-              unit: getUnit(stat[2], true)?.[0],
-            }),
-            mem_usage_limit_total: convertToString({
-              value: getDigits(stat[2])?.[1],
-              unit: getUnit(stat[2], true)?.[1],
-            }),
-            netio: convertToString({
-              value: getDigits(stat[4])?.[0],
-              unit: getUnit(stat[4])?.[0],
-            }),
-            netio_total: convertToString({
-              value: getDigits(stat[4])?.[1],
-              unit: getUnit(stat[4])?.[1],
-            }),
-            blockio: convertToString({
-              value: getDigits(stat[5].split('\n')[0])?.[0],
-              unit: getUnit(stat[5].split('\n')[0])?.[0],
-            }),
-            blockio_total: convertToString({
-              value: getDigits(stat[5].split('\n')[0])?.[1],
-              unit: getUnit(stat[5].split('\n')[0])?.[1],
-            }),
+            mem_usage_limit: getValueUnit(stat[2], 0, true),
+            mem_usage_limit_total: getValueUnit(stat[2], 1, true),
+            netio: getValueUnit(stat[4], 0),
+            netio_total: getValueUnit(stat[4], 1),
+            blockio: getValueUnit(stat[5].split('\n')[0], 0),
+            blockio_total: getValueUnit(stat[5].split('\n')[0], 1),
           }
           debug('extrayendo estadísticas %O', nuevoStat)
           await db.insertOne<Stat>('STATS', nuevoStat)
