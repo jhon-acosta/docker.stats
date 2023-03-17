@@ -1,10 +1,10 @@
-import DB from './libs/db'
 import Debug from 'debug'
+import DB from './utils/db'
 import cors from '@fastify/cors'
 import { routes } from './routes'
-import { configs } from './libs/utils'
+import { configs } from './utils'
 import formbody from '@fastify/formbody'
-import statsWatch from './libs/stats-watch'
+import statsWatch from './utils/stats-watch'
 import fastify, { FastifyInstance } from 'fastify'
 
 if (!!configs.ENV_DEV === true) {

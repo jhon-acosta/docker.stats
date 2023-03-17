@@ -5,10 +5,10 @@ services:
     image: docker-stats
     ports:
       - 8082:8082
-    command: sh -c "docker stats --format 'table {{.Container}} - {{.Name}} - {{.CPUPerc}} - {{.MemUsage}} - {{.MemPerc}} - {{.NetIO}} - {{.BlockIO}}' > /app/src/resources/stats.txt & node /app/build/index.js"
+    command: sh -c "docker stats --format 'table {{.Container}} - {{.Name}} - {{.CPUPerc}} - {{.MemUsage}} - {{.MemPerc}} - {{.NetIO}} - {{.BlockIO}}' > /app/src/static/stats.txt & node /app/build/index.js"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - docker-stats-db:/app/src/resources/db
+      - docker-stats-db:/app/src/static/db
     environment:
       HOST: '0.0.0.0'
       NODE_ENV: PRODUCTION

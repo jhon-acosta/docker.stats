@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS CONTAINERS (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS STATS (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  container_id INTEGER,
+  date TEXT NOT NULL,
+  mem_percentaje REAL NOT NULL,
+  cpu_percentaje REAL NOT NULL,
+  mem_usage_limit REAL NOT NULL,
+  mem_usage_limit_total REAL NOT NULL,
+  netio REAL NOT NULL,
+  netio_total REAL NOT NULL,
+  blockio REAL NOT NULL,
+  blockio_total REAL NOT NULL,
+  FOREIGN KEY (container_id) REFERENCES CONTAINERS(id)
+);

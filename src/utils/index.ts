@@ -30,7 +30,7 @@ export function convertirStringToNumber(
   args?: { excludes: string[] },
 ) {
   for (const key in registro) {
-    if (args?.excludes.includes(key)) {
+    if (args?.excludes.includes(key) || key === 'unit') {
       continue
     } else if (typeof registro[key] === 'object') {
       convertirStringToNumber(registro[key])
@@ -43,8 +43,11 @@ export function convertirStringToNumber(
 export function validarRegistroNumerico(rows: Record<string, object>[]) {
   for (const item of rows) {
     convertirStringToObject(item, 'mem_usage_limit')
+    convertirStringToObject(item, 'mem_usage_limit_total')
     convertirStringToObject(item, 'netio')
+    convertirStringToObject(item, 'netio_total')
     convertirStringToObject(item, 'blockio')
+    convertirStringToObject(item, 'blockio_total')
     convertirStringToNumber(item, {
       excludes: ['id', 'name', 'date', 'container_id'],
     })

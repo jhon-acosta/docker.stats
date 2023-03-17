@@ -1,54 +1,49 @@
+import fs from 'fs'
 import path from 'path'
+import dayjs from 'dayjs'
 import sqlite3 from 'sqlite3'
-import {
-  convertirStringToNumber,
-  convertirStringToObject,
-  validarRegistroNumerico,
-} from './utils'
+import { validarRegistroNumerico } from '.'
 
 type DataBase = 'CONTAINERS' | 'STATS'
 
 export interface Container {
-  id?: string // PK
+  id?: number // PK
   name: string
 }
 
 export interface Stat {
   id?: string // PK
-  container_id: number | string // FK
+  container_id: number // FK
   date: string
-  cpu_percentaje: string
+  mem_percentaje: number
+  cpu_percentaje: number
   mem_usage_limit: string
-  mem_percentaje: string
+  mem_usage_limit_total: string
   netio: string
+  netio_total: string
   blockio: string
+  blockio_total: string
 }
 
 export default class DB {
   /**
    * Configuración de db
    */
-  readonly dbLocate = path.join(__dirname, '../../src/resources/db/db.db')
+  readonly dbLocate = path.join(__dirname, '../../src/static/db/db.db')
   readonly db = new sqlite3.Database(this.dbLocate)
-  /**
-   * Configuración de modelo de db
-   */
-  readonly tableContainers =
-    'CREATE TABLE IF NOT EXISTS CONTAINERS (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL)'
-  readonly tableStats =
-    'CREATE TABLE IF NOT EXISTS STATS (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, cpu_percentaje TEXT NOT NULL, mem_usage_limit TEXT NOT NULL, mem_percentaje TEXT NOT NULL , netio TEXT NOT NULL, blockio TEXT NOT NULL, container_id INTEGER, FOREIGN KEY (container_id) REFERENCES CONTAINERS(id))'
 
   constructor() {
     this.initDB()
   }
 
   initDB() {
-    const db = this.db
-    const statsTable = this.tableStats
-    const containersTable = this.tableContainers
-    db.serialize(function () {
-      db.run(containersTable)
-      db.run(statsTable)
+    const sql = fs
+      .readFileSync(path.join(__dirname, '../../src/utils/sql/tables.sql'))
+      .toString()
+    this.db.exec(sql, (err) => {
+      if (err) {
+        console.error(err)
+      }
     })
   }
 
@@ -193,10 +188,23 @@ export default class DB {
     table1: DataBase,
     table2: DataBase,
     id: string | number,
+    args?: {
+      startDate?: string
+      endDate?: string
+    },
   ): Promise<any> {
+    const getDateInit = (date?: string) =>
+      dayjs(date).startOf('d').toISOString()
+    const startDate = getDateInit(args?.startDate)
+    const condition =
+      args?.startDate && args?.endDate
+        ? `date BETWEEN date('${startDate}') AND date('${getDateInit(
+            args.endDate,
+          )}')`
+        : `date > date('${startDate}')`
     return await new Promise((resolve, reject) => {
       this.db.all(
-        `SELECT * FROM ${table1} INNER JOIN ${table2} ON ${table1}.id = ${table2}.container_id WHERE ${table1}.id = ${id}`,
+        `SELECT * FROM ${table1} INNER JOIN ${table2} ON ${table1}.id = ${table2}.container_id WHERE ${table1}.id = ${id} AND ${condition}`,
         (error, rows) => {
           if (error) {
             return reject(error)
