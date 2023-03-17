@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import dayjs from 'dayjs'
 import Debug from 'debug'
+import { configs } from '.'
 import { FastifyInstance } from 'fastify'
 import DB, { Container, Stat } from './db'
 
@@ -42,20 +43,21 @@ const getValueUnit = (value: string, index: number, memUseLimit = false) =>
 
 export default async function statsWatch(db: DB, instance: FastifyInstance) {
   try {
-    fs.watchFile(ruta, { interval: 1000 }, async (status) => {
+    fs.watchFile(ruta, { interval: configs.FILE_READ_TIME }, async (status) => {
       try {
         const fecha = dayjs(status.atime)
         instance.log.info(
           `reading file:${ruta} - ${fecha.format('DD/MM/YYYY HH:mm:ss')}`,
         )
         const data = fs.readFileSync(ruta, 'utf8')
-        const registro = data?.split(' - ')
+        const registro = data?.split('|')
         const index = registro.lastIndexOf('NET I/O') + 2
         debug('tomando último lote de escritura posición: %s', index)
         registro.splice(0, index)
         let i = 0
         do {
           const contenedorNombreServicio = registro?.[i]
+            ?.split('\n')?.[1]
             ?.split('.')
             ?.filter((item) => !/[a-z0-9]{24}/.test(item))
             ?.join('.')

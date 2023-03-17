@@ -5,6 +5,7 @@ export const configs = {
   ENV_DEV: function (): boolean {
     return this.ENV === 'DEVELOPMENT'
   },
+  FILE_READ_TIME: parseInt(process.env.FILE_READ_TIME as string) || 3000,
   logger: {
     transport: {
       target: 'pino-pretty',
