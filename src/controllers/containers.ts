@@ -13,13 +13,13 @@ export default {
     try {
       const { startDate, endDate } = req.query
       const containers = await db.getAll<Container>('CONTAINERS')
-      console.log('containers', containers)
       if (containers.data.length > 0) {
         const promesas = containers.data.map((item) =>
           db.joinTable('CONTAINERS', 'STATS', item.id!, { startDate, endDate }),
         )
         const data = await Promise.all(promesas)
-        return res.send({ data })
+        res.send({ data })
+        return
       }
       res.send([])
     } catch (error) {

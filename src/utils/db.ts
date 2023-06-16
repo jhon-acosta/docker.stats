@@ -192,25 +192,29 @@ export default class DB {
       startDate?: string
       endDate?: string
     },
-  ): Promise<any> {
-    const getDateInit = (date?: string) =>
-      dayjs(date).startOf('d').toISOString()
-    const startDate = getDateInit(args?.startDate)
+  ): Promise<unknown> {
+    const dateInit = (date?: string) => dayjs(date).startOf('d').toISOString()
+    const startDate = dateInit(args?.startDate)
+
     const condition =
       args?.startDate && args?.endDate
-        ? `date BETWEEN date('${startDate}') AND date('${getDateInit(
-            args.endDate,
-          )}')`
-        : `date > date('${startDate}')`
+        ? `date BETWEEN '${startDate}' AND '${dateInit(args.endDate)}'`
+        : `date > '${startDate}'`
+
     return await new Promise((resolve, reject) => {
       this.db.all(
-        `SELECT * FROM ${table1} INNER JOIN ${table2} ON ${table1}.id = ${table2}.container_id WHERE ${table1}.id = ${id} AND ${condition}`,
+        `SELECT * FROM ${table1} INNER JOIN ${table2} ON ${table1}.id = \
+${table2}.container_id WHERE ${table1}.id = ${id} AND ${condition}`,
         (error, rows) => {
           if (error) {
             return reject(error)
           }
           validarRegistroNumerico(rows)
-          resolve({ id, stats: rows })
+          resolve({
+            id,
+            name: rows.find((item) => item.container_id === id)?.name || '',
+            stats: rows,
+          })
         },
       )
     })
